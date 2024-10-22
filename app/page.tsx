@@ -1,5 +1,7 @@
 "use client";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
 import AirPollution from "./Components/AirPollution/AirPollution";
 import DailyForecast from "./Components/DailyForecast/DailyForecast";
 import FeelsLike from "./Components/FeelsLike/FeelsLike";
