@@ -1,12 +1,10 @@
 "use client";
-import Image from "next/image";
-import dynamic from "next/dynamic";
+import dynamic from "next/dynamic"; // Import dynamic for client-side-only components
 
 import AirPollution from "./Components/AirPollution/AirPollution";
 import DailyForecast from "./Components/DailyForecast/DailyForecast";
 import FeelsLike from "./Components/FeelsLike/FeelsLike";
 import Humidity from "./Components/Humidity/Humidity";
-import Mapbox from "./Components/Mapbox/Mapbox";
 import Navbar from "./Components/Navbar";
 import Population from "./Components/Population/Population";
 import Pressure from "./Components/Pressure/Pressure";
@@ -19,13 +17,16 @@ import defaultStates from "./utils/defaultStates";
 import FiveDayForecast from "./Components/FiveDayForecast/FiveDayForecast";
 import { useGlobalContextUpdate } from "./context/globalContext";
 
+// Dynamically import Mapbox with SSR disabled
+const Mapbox = dynamic(() => import("./Components/Mapbox/Mapbox"), { ssr: false });
+
 export default function Home() {
   const { setActiveCityCoords } = useGlobalContextUpdate();
 
+  // Ensure window is only used on the client side
   const getClickedCityCords = (lat: number, lon: number) => {
     setActiveCityCoords([lat, lon]);
 
-    // Only run this on the client
     if (typeof window !== "undefined") {
       window.scrollTo({
         top: 0,
@@ -62,19 +63,15 @@ export default function Home() {
                 Top Large Cities
               </h2>
               <div className="flex flex-col gap-4">
-                {defaultStates.map((state, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="border rounded-lg cursor-pointer dark:bg-dark-grey shadow-sm dark:shadow-none"
-                      onClick={() => {
-                        getClickedCityCords(state.lat, state.lon);
-                      }}
-                    >
-                      <p className="px-6 py-4">{state.name}</p>
-                    </div>
-                  );
-                })}
+                {defaultStates.map((state, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-lg cursor-pointer dark:bg-dark-grey shadow-sm dark:shadow-none"
+                    onClick={() => getClickedCityCords(state.lat, state.lon)}
+                  >
+                    <p className="px-6 py-4">{state.name}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -84,13 +81,7 @@ export default function Home() {
       <footer className="py-4 flex justify-center pb-8">
         <p className="footer-text text-sm flex items-center gap-1">
           @2024 Copyrights. All Rights Reserved
-          
-          <a
-            target="_blank"
-            className=" text-red-500 font-bold"
-          >
-            Sharan
-          </a>
+          <a target="_blank" className="text-red-500 font-bold">Sharan</a>
         </p>
       </footer>
     </main>
