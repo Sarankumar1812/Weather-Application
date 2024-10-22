@@ -1,8 +1,7 @@
-"use Client";
+"use client";
 import axios from "axios";
 import React, { useContext, createContext, useState, useEffect } from "react";
 import defaultStates from "../utils/defaultStates";
-
 import { debounce } from "lodash";
 
 const GlobalContext = createContext();
@@ -12,19 +11,35 @@ export const GlobalContextProvider = ({ children }) => {
   const [forecast, setForecast] = useState({});
   const [geoCodedList, setGeoCodedList] = useState(defaultStates);
   const [inputValue, setInputValue] = useState("");
-
-  const [activeCityCoords, setActiveCityCoords] = useState([
-    51.752021, -1.257726,
-  ]);
-
+  const [activeCityCoords, setActiveCityCoords] = useState([51.752021, -1.257726]); // Default coordinates
   const [airQuality, setAirQuality] = useState({});
   const [fiveDayForecast, setFiveDayForecast] = useState({});
-  const [uvIndex, seUvIndex] = useState({});
+  const [uvIndex, setUvIndex] = useState({});
+
+  // Function to get the user's current location
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setActiveCityCoords([latitude, longitude]); // Update activeCityCoords with user's location
+        },
+        (error) => {
+          console.error("Error getting location: ", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
+
+  useEffect(() => {
+    getUserLocation(); // Get the user's location when the component mounts
+  }, []);
 
   const fetchForecast = async (lat, lon) => {
     try {
-      const res = await axios.get(`api/weather?lat=${lat}&lon=${lon}`);
-
+      const res = await axios.get(`/api/weather?lat=${lat}&lon=${lon}`);
       setForecast(res.data);
     } catch (error) {
       console.log("Error fetching forecast data: ", error.message);
@@ -34,47 +49,44 @@ export const GlobalContextProvider = ({ children }) => {
   // Air Quality
   const fetchAirQuality = async (lat, lon) => {
     try {
-      const res = await axios.get(`api/pollution?lat=${lat}&lon=${lon}`);
+      const res = await axios.get(`/api/pollution?lat=${lat}&lon=${lon}`);
       setAirQuality(res.data);
     } catch (error) {
       console.log("Error fetching air quality data: ", error.message);
     }
   };
 
-  // five day forecast
+  // Five-day forecast
   const fetchFiveDayForecast = async (lat, lon) => {
     try {
-      const res = await axios.get(`api/fiveday?lat=${lat}&lon=${lon}`);
-
+      const res = await axios.get(`/api/fiveday?lat=${lat}&lon=${lon}`);
       setFiveDayForecast(res.data);
     } catch (error) {
       console.log("Error fetching five day forecast data: ", error.message);
     }
   };
 
-  //geocoded list
+  // Geocoded list
   const fetchGeoCodedList = async (search) => {
     try {
       const res = await axios.get(`/api/geocoded?search=${search}`);
-
       setGeoCodedList(res.data);
     } catch (error) {
       console.log("Error fetching geocoded list: ", error.message);
     }
   };
 
-  //fetch uv data
+  // Fetch UV data
   const fetchUvIndex = async (lat, lon) => {
     try {
       const res = await axios.get(`/api/uv?lat=${lat}&lon=${lon}`);
-
-      seUvIndex(res.data);
+      setUvIndex(res.data);
     } catch (error) {
-      console.error("Error fetching the forecast:", error);
+      console.error("Error fetching the UV index:", error);
     }
   };
 
-  // handle input
+  // Handle input
   const handleInput = (e) => {
     setInputValue(e.target.value);
 
@@ -83,7 +95,7 @@ export const GlobalContextProvider = ({ children }) => {
     }
   };
 
-  // debounce function
+  // Debounce function
   useEffect(() => {
     const debouncedFetch = debounce((search) => {
       fetchGeoCodedList(search);
@@ -93,7 +105,7 @@ export const GlobalContextProvider = ({ children }) => {
       debouncedFetch(inputValue);
     }
 
-    // cleanup
+    // Cleanup
     return () => debouncedFetch.cancel();
   }, [inputValue]);
 
