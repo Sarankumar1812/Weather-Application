@@ -2,22 +2,21 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { github } from "../utils/Icons"; // Assuming you might use this elsewhere
 import ThemeDropdown from "./ThemeDropdown/ThemeDropdown";
 import SearchDialog from "./SearchDialog/SearchDialog";
-import { useGlobalContext, useGlobalContextUpdate } from "../context/globalContext";
-import { MapPin } from "lucide-react"; // Importing the MapPin icon
+import { useGlobalContextUpdate } from "../context/globalContext";
+import { MapPin } from "lucide-react"; 
+import { github } from "../utils/Icons";
 
 function Navbar() {
   const router = useRouter();
-  const { setActiveCityCoords } = useGlobalContextUpdate(); // Get the function to update active city coordinates
-
+  const { setActiveCityCoords } = useGlobalContextUpdate(); 
   const handleLiveLocationClick = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setActiveCityCoords([latitude, longitude]); // Update active city coordinates
+          setActiveCityCoords([latitude, longitude]); 
         },
         (error) => {
           console.error("Error getting location: ", error);
@@ -38,14 +37,21 @@ function Navbar() {
           <ThemeDropdown />
 
           <Button
-            className="source-code-btn flex items-center gap-2"
-            onClick={() => {
-              router.push("https//github.com");
-            }}
+            className="live-location-btn flex items-center gap-2"
+            onClick={handleLiveLocationClick}
           >
-            {/* Adding the location icon */}
+            
             <MapPin className="icon" /> 
             Live Location
+          </Button>
+
+          <Button
+            className="source-code-btn flex items-center gap-2"
+            onClick={() => {
+              router.push("https://github.com/Sarankumar1812/Weather-Application");
+            }}
+          >
+            {github} Source Code
           </Button>
         </div>
       </div>
