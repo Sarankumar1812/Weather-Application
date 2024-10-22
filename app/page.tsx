@@ -23,10 +23,13 @@ export default function Home() {
   const getClickedCityCords = (lat: number, lon: number) => {
     setActiveCityCoords([lat, lon]);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    // Only run this on the client
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
@@ -81,7 +84,6 @@ export default function Home() {
           @2024 Copyrights. All Rights Reserved
           
           <a
-            
             target="_blank"
             className=" text-red-500 font-bold"
           >
