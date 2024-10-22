@@ -38,8 +38,10 @@ function Navbar() {
           <ThemeDropdown />
 
           <Button
-            className="live-location-btn flex items-center gap-2"
-            onClick={handleLiveLocationClick}
+            className="source-code-btn flex items-center gap-2"
+            onClick={() => {
+              router.push("https//github.com");
+            }}
           >
             {/* Adding the location icon */}
             <MapPin className="icon" /> 
